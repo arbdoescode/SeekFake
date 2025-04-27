@@ -1,1 +1,1 @@
-#lindita task test
+#lindita task test 1.2
