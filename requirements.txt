@@ -1,0 +1,10 @@
+fastapi[all]
+asyncio
+datetime
+discord
+flask
+numpy
+Pyrebase4
+pydantic
+requests
+py-cord  
