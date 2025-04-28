@@ -9,3 +9,5 @@ pydantic
 requests
 py-cord  
 hashlib
+firebase-admin
+python-dotenv
