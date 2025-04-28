@@ -8,3 +8,4 @@ Pyrebase4
 pydantic
 requests
 py-cord  
+hashlib
