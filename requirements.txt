@@ -1,13 +1,11 @@
 fastapi[all]
-asyncio
-datetime
 discord
 flask
 numpy
 Pyrebase4
 pydantic
 requests
-py-cord  
-hashlib
+py-cord
 firebase-admin
 python-dotenv
+setuptools
