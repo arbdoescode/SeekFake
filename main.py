@@ -2,8 +2,10 @@ import asyncio
 from fastapi import FastAPI
 from middleware import token_auth
 from config.database import db
-from module.Request.UserAuthReq import UserAuth
-from service import auth
+from module.Request import UserAuthReq,ExampleReq
+from service import auth,aigenerating
+from starlette.requests import Request
+
 
 app = FastAPI()
 
@@ -21,7 +23,19 @@ async def test_call():
     return {"message": data}
 
 @app.post("/user/")
-async def UserAuthentication(item:UserAuth):
+async def UserAuthentication(item:UserAuthReq.UserAuth):
     return auth.UserAuth(item)
-  
 
+
+@app.post("/aitest/")
+async def aitest_call(msg:ExampleReq.SimpleReq):
+    return {"message": aigenerating.aibasicresponse(msg)}
+
+@app.get("/get-ip")
+async def get_ip(request: Request):
+    x_forwarded_for = request.headers.get('X-Forwarded-For')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.client.host
+    return {"ip": ip}

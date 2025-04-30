@@ -9,3 +9,5 @@ py-cord
 firebase-admin
 python-dotenv
 setuptools
+google
+google-generativeai

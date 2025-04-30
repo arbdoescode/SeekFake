@@ -3,18 +3,19 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, firestore
 import pyrebase
+from config import environment
 
 load_dotenv()
 
 firebase_config = {
-    "apiKey": os.getenv("FIREBASE_API_KEY"),
-    "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
-    "databaseURL": os.getenv("FIREBASE_DATABASE_URL"),
-    "projectId": os.getenv("FIREBASE_PROJECT_ID"),
-    "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
-    "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
-    "appId": os.getenv("FIREBASE_APP_ID"),
-    "measurementId": os.getenv("FIREBASE_MEASURMENT_ID"),
+    "apiKey": environment.apiKey,
+    "authDomain": environment.authDomain,
+    "databaseURL": environment.databaseURL,
+    "projectId": environment.projectId,
+    "storageBucket": environment.storageBucket,
+    "messagingSenderId": environment.messagingSenderId,
+    "appId": environment.appId,
+    "measurementId": environment.measurementId,
 }
 
 # key_path = os.path.join(os.path.dirname(__file__), os.getenv("FOLDER_SECRET"), os.getenv("SERVICE_ACCOUNT"))
