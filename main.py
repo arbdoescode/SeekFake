@@ -6,7 +6,6 @@ from module.Request import UserAuthReq,ExampleReq
 from service import auth,aigenerating
 from starlette.requests import Request
 
-
 app = FastAPI()
 
 app.add_middleware(token_auth.CheckValueMiddleware, skip_paths=["/test/"])
@@ -24,12 +23,14 @@ async def test_call():
 
 @app.post("/user/")
 async def UserAuthentication(item:UserAuthReq.UserAuth):
-    return auth.UserAuth(item)
+    response_text = await auth.UserAuth(item)
+    return response_text
 
 
 @app.post("/aitest/")
 async def aitest_call(msg:ExampleReq.SimpleReq):
-    return {"message": aigenerating.aibasicresponse(msg)}
+    response_text = await aigenerating.aibasicresponse(msg)
+    return {"message": response_text}
 
 @app.get("/get-ip")
 async def get_ip(request: Request):
@@ -39,3 +40,9 @@ async def get_ip(request: Request):
     else:
         ip = request.client.host
     return {"ip": ip}
+
+# Lindita Suta controllers
+
+
+
+# endregion LS

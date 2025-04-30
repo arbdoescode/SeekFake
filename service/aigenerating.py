@@ -3,7 +3,8 @@ from google import generativeai as genai
 from dotenv import load_dotenv
 from config.aimodel import gemionimodel
 from module.Request.ExampleReq import SimpleReq
+import asyncio
 
-def aibasicresponse(msg:SimpleReq):
-    response = gemionimodel.generate_content(msg.msg)
+async def aibasicresponse(msg:SimpleReq):
+    response = await asyncio.to_thread(gemionimodel.generate_content, msg.msg)
     return response.text
