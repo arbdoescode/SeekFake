@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from middleware import token_auth
 from config.database import db
 from module.Request import UserAuthReq,ExampleReq
-from service import auth,aigenerating
+from service import auth,aigenerating,ipsessions
 from starlette.requests import Request
 
 app = FastAPI()
@@ -40,6 +40,11 @@ async def get_ip(request: Request):
     else:
         ip = request.client.host
     return {"ip": ip}
+
+@app.post("/ip-list/")
+async def iplist_call(sess:ExampleReq.SimpleReq):
+    response_text = await ipsessions.getSessions(sess.msg)
+    return response_text
 
 # Lindita Suta controllers
 

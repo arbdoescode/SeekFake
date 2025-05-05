@@ -4,7 +4,7 @@ from config.database import firebase_config
 import asyncio
 
 async def UserAuth(item: UserAuth):
-    users = await asyncio.to_thread(db.child("Users").get)
+    users = await asyncio.to_thread(db.child("ApiClients").get)
 
     if users.each() is None:
         return {"Error": "No user found in database"}
@@ -15,6 +15,9 @@ async def UserAuth(item: UserAuth):
             return {"message": "User Found"}
 
     return {"message": "User Not Found"}
+
+
+
 
 
    
