@@ -11,3 +11,4 @@ python-dotenv
 setuptools
 google
 google-generativeai
+pyodbc
