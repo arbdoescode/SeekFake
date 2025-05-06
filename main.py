@@ -13,6 +13,8 @@ app = FastAPI()
 
 app.add_middleware(token_auth.CheckValueMiddleware, skip_paths=["/test/"])
 
+# Example methods
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}

@@ -1,6 +1,3 @@
-import os
-from google import generativeai as genai
-from dotenv import load_dotenv
 from config.aimodel import gemionimodel
 from module.Request.ExampleReq import SimpleReq
 import asyncio
