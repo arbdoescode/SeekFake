@@ -17,3 +17,8 @@ serviceacc = os.getenv("SERVICE_ACCOUNT")
 
 exampleapikey = os.getenv("YOUR_AI_API_KEY")
 
+azureservername=os.getenv("AZURE_SQL_SERVER")
+azuredatabase=os.getenv("AZURE_SQL_DATABASE")
+azureusername=os.getenv("AZURE_USERNAME")
+azurepassword=os.getenv("AZURE_PASSWORD")
+
