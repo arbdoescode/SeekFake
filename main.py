@@ -2,7 +2,7 @@ import asyncio
 from fastapi import FastAPI
 from middleware import token_auth
 from config.database import db
-from config.databaseAzure import get_connection
+from config.databaseAzure import conn
 from module.Request import UserAuthReq,ExampleReq
 from module.Response import UserRes
 from service import auth,aigenerating,ipsessions
@@ -51,11 +51,9 @@ async def iplist_call(sess:ExampleReq.SimpleReq):
 
 # Lindita Suta controllers
 
-@app.get("/getusers/",response_model=List[UserRes.UsrResponse])
-def test_get_users():
-    users = auth.fetch_users()
-    if users is None:
-        return []
+@app.get("/getusers/")
+async def test_get_users():
+    users = await auth.fetch_users()
     return users
 
   
