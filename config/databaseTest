@@ -1,0 +1,70 @@
+import pyodbc
+import os
+
+from fastapi import  Depends
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String
+
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+azureservername=os.getenv("AZURE_SQL_SERVER")
+azuredatabase=os.getenv("AZURE_SQL_DATABASE")
+azureusername=os.getenv("AZURE_USERNAME")
+azurepassword=os.getenv("AZURE_PASSWORD")
+
+
+DATABASE_URL = (
+    f"mssql+pyodbc://{azureusername}:{azurepassword}"
+    f"@{azureservername}/{azuredatabase}"
+    "?driver=ODBC+Driver+18+for+SQL+Server"
+    "&Encrypt=yes"
+    "&TrustServerCertificate=no"
+    "&Connection Timeout=30"
+)
+
+
+
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal() 
+    try:
+        yield db  
+    finally:
+        db.close()
+        
+class UserAuth(BaseModel):
+    username:str
+    token:str
+    device:str
+
+
+class UserTest(Base):
+    __tablename__ = "UserTest"
+    ID = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Username = Column(String, primary_key=True)
+    Token = Column(String)
+    Device = Column(String)
+
+
+        
+        
+def register_user():
+    db = get_db()
+    db = next(db) 
+    user = UserAuth(username="BoraKo", token="sfasdfds", device="")
+    new_user = UserTest(Username=user.username, Token=user.token, Device=user.device)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+register_user()
