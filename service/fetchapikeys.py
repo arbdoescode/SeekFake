@@ -1,7 +1,13 @@
 import asyncio 
 import hashlib
-from config.database import db
+import uuid
 
-def Md5Format():
-    result=hashlib.md5(b'BrokenRoad')
-    print(result.hexdigest())
+def Md5Format(sessionid:str):
+    result=hashlib.md5(str)
+    return result
+    
+
+def usersessionid():
+    user_session_id = str(uuid.uuid4())
+    return user_session_id
+     
