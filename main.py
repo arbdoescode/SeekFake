@@ -2,9 +2,10 @@ import asyncio
 from fastapi import FastAPI
 from middleware import token_auth
 from config.database import db
-from config.databaseAzure import conn
+# from config.databaseAzure import conn
 from module.Request import UserAuthReq,ExampleReq
 from module.Response import UserRes
+from module.Request.Account import RegisterUserReq
 from service import auth,aigenerating,ipsessions
 from starlette.requests import Request
 from typing import List
@@ -53,11 +54,15 @@ async def iplist_call(sess:ExampleReq.SimpleReq):
 
 # Lindita Suta controllers
 
-@app.get("/getusers/")
+@app.get("/test-getusers/")
 async def test_get_users():
     users = await auth.fetch_users()
     return users
 
+@app.post("/test-register/")
+async def RegisterNewUser(item:UserAuthReq.UserAuth):
+    response_text = await auth.registerNewUser(item)
+    return response_text
   
 
 

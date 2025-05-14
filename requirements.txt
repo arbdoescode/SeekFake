@@ -12,3 +12,4 @@ setuptools
 google
 google-generativeai
 pyodbc
+# sqlalchemy
