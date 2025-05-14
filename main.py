@@ -52,12 +52,12 @@ async def iplist_call(sess:ExampleReq.SimpleReq):
 
 # Lindita Suta controllers
 
-@app.get("/getusers/")
+@app.get("/test-getusers/")
 async def test_get_users():
     users = await auth.fetch_users()
     return users
 
-@app.post("/register/")
+@app.post("/test-register/")
 async def RegisterNewUser(item:UserAuthReq.UserAuth):
     response_text = await auth.registerNewUser(item)
     return response_text
