@@ -1,18 +1,22 @@
 import asyncio
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 from middleware import token_auth
 from config.database import db
 # from config.databaseAzure import conn
 from module.Request import UserAuthReq,ExampleReq
 from module.Response import UserRes
 from module.Request.Account import RegisterUserReq
+from module.Response.BaseRes import BaseResp
 from service import auth,aigenerating,ipsessions
 from starlette.requests import Request
 from typing import List
 
 app = FastAPI()
 
-app.add_middleware(token_auth.CheckValueMiddleware, skip_paths=["/test/"])
+app.add_middleware(token_auth.CheckValueMiddleware, skip_paths=["/test/","/register/"])
 
 # Example methods
 
@@ -53,17 +57,23 @@ async def iplist_call(sess:ExampleReq.SimpleReq):
     return response_text
 
 # Lindita Suta controllers
-
+    
 @app.get("/test-getusers/")
 async def test_get_users():
-    users = await auth.fetch_users()
+    users = await auth.fetch_users_Test()
     return users
 
 @app.post("/test-register/")
 async def RegisterNewUser(item:UserAuthReq.UserAuth):
+    response_text = await auth.registerNewUser_Test(item)
+    return response_text
+
+@app.post("/register/")
+async def RegisterNewUser(item:RegisterUserReq.RegUserReq):
     response_text = await auth.registerNewUser(item)
     return response_text
-  
+
+
 
 
 # endregion LS

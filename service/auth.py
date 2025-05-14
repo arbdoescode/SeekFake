@@ -1,11 +1,71 @@
 from config.database import db
 from module.Request.UserAuthReq import UserAuth
 from module.Request.Account.RegisterUserReq import RegUserReq
+from module.Response.BaseRes import BaseResp
 # from module.ModelDB.UserTest import UsrTest
 from config.database import firebase_config
 from config.databaseAzure import conn
+from service import fetchapikeys
 # from config.databaseAzure import get_db
+from datetime import datetime
 import asyncio
+
+
+
+# User Login & Registration
+
+async def registerNewUser(item:RegUserReq):
+    try:
+        item.fullname = item.firstname.upper() + ' ' + item.lastname.upper()
+        item.password = fetchapikeys.PasswordHash(item.password)
+        item.recordcreateddate = datetime.now()
+        
+        def check_existing(username: str):
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM [User] WHERE Username = ?", (username,))
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            cursor.close()
+            
+            return [dict(zip(columns, row)) for row in rows]
+
+       
+        def run_query():
+           
+            existing_user = check_existing(item.username)
+
+            if existing_user:  
+                resp = BaseResp(Result=False, ResultMessage="User already exists")
+                return resp
+            else:
+                try:
+                   
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "INSERT INTO [User] (Username, Fullname, Password, UserPlan, Active, RecCreatedDate) "
+                        "VALUES (?, ?, ?, ?, ?, ?)",
+                        (item.username, item.fullname, item.password, 'Free', True, item.recordcreateddate)
+                    )
+                   
+                    conn.commit()
+                    cursor.close()
+
+                    
+                    resp = BaseResp(Result=True, ResultMessage="User registered successfully")
+                    return resp
+                except Exception as e:
+                   
+                    resp = BaseResp(Result=False, ResultMessage=f"Error registering user: {e}")
+                    return resp
+        
+        return await asyncio.to_thread(run_query)
+    except Exception as e:
+        resp = BaseResp(Result=False, ResultMessage=f"Error registering user: {e}")
+        return resp
+
+
+
+# Testing Phase
 
 async def UserAuth(item: UserAuth):
     users = await asyncio.to_thread(db.child("ApiClients").get)
@@ -20,7 +80,7 @@ async def UserAuth(item: UserAuth):
 
     return {"message": "User Not Found"}
 
-async def fetch_users():
+async def fetch_users_Test():
     try:
         def run_query():
             cursor = conn.cursor()
@@ -36,8 +96,7 @@ async def fetch_users():
     except Exception as e:
         return {"message": f"Error fetching users: {e}"}
     
-    
-async def registerNewUser(item:UserAuth):
+async def registerNewUser_Test(item:UserAuth):
     try:
         def run_query():
             cursor = conn.cursor()
@@ -51,7 +110,10 @@ async def registerNewUser(item:UserAuth):
         return {"message": f"Error registering user: {e}"}
     
     
-    
+
+
+
+
 # async def register_user(user:UserAuth):
 #      try:
 #         def run_query():
@@ -67,6 +129,8 @@ async def registerNewUser(item:UserAuth):
     
 #      except Exception as e:
 #         return {"message": f"Error registering user: {e}"}
+
+#Finish Testing Phase
 
 
 

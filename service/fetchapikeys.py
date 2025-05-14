@@ -11,3 +11,6 @@ def usersessionid():
     user_session_id = str(uuid.uuid4())
     return user_session_id
      
+def PasswordHash(password:str):
+    result = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    return result
