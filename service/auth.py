@@ -138,6 +138,53 @@ async def logout(token:str):
         resp = BaseResp(Result=False, ResultMessage=f"Error log out user: {e}")
         return resp
              
+async def getUser(username: str):
+    try:
+        def run_query():
+              
+            cursor = conn.cursor()
+            cursor.execute("SELECT [Username],[Fullname],[UserPlan] FROM [User] WHERE Username = ?", (username))
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            cursor.close()
+            
+            return [dict(zip(columns, row)) for row in rows]
+        
+        return await asyncio.to_thread(run_query)
+    except Exception as e:
+        resp = BaseResp(Result=False, ResultMessage=f"Error geting user: {e}")
+        return resp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Testing Phase
 

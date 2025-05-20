@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
@@ -72,12 +72,24 @@ async def RegisterNewUser(item:LogInReq.LogInUsr):
     response_text = await auth.logIn(item)
     return response_text  
 
-@app.get("/logout/{token}")
-async def RegisterNewUser(token: str):
+# @app.get("/logout/{token}")
+# async def RegisterNewUser(token: str):
+#     response_text = await auth.logout(token)
+#     return response_text  
+
+@app.get("/logout/")
+async def RegisterNewUser(request: Request):
+    token = request.headers.get("token")
     response_text = await auth.logout(token)
     return response_text  
 
 #TESTING
+
+@app.get("/test__getuser/")
+async def test__get_users(request: Request):
+    username = request.state.username  
+    users = await auth.getUser(username) 
+    return users
 
 @app.get("/test-getusers/")
 async def test_get_users():
