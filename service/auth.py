@@ -1,18 +1,19 @@
 from config.database import db
 from module.Request.UserAuthReq import UserAuth
 from module.Request.Account.RegisterUserReq import RegUserReq
+from module.Request.Account.LogInReq import LogInUsr
 from module.Response.BaseRes import BaseResp
 # from module.ModelDB.UserTest import UsrTest
 from config.database import firebase_config
 from config.databaseAzure import conn
 from service import fetchapikeys
-# from config.databaseAzure import get_db
-from datetime import datetime
+# from _Testing.databaseTest import SessionLocal
+from datetime import datetime, timedelta
 import asyncio
 
 
 
-# User Login & Registration
+# User Login/LogOut & Registration
 
 async def registerNewUser(item:RegUserReq):
     try:
@@ -22,7 +23,7 @@ async def registerNewUser(item:RegUserReq):
         
         def check_existing(username: str):
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM [User] WHERE Username = ?", (username,))
+            cursor.execute("SELECT * FROM [User] WHERE Username = ?", (username))
             rows = cursor.fetchall()
             columns = [column[0] for column in cursor.description]
             cursor.close()
@@ -63,7 +64,80 @@ async def registerNewUser(item:RegUserReq):
         resp = BaseResp(Result=False, ResultMessage=f"Error registering user: {e}")
         return resp
 
+async def logIn(usr:LogInUsr):
+    try:
+        hashedpassword = fetchapikeys.PasswordHash(usr.password)
+        
+        def check_existing(username: str,password:str):
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM [User] WHERE Username = ? and Password = ?", (usr.username,hashedpassword))
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            cursor.close()
+            
+            return [dict(zip(columns, row)) for row in rows]
 
+       
+        def run_query():
+           
+            existing_user = check_existing(usr.username,hashedpassword)
+
+            
+            if not existing_user:  
+                resp = BaseResp(Result=False, ResultMessage="Incorrect username or password")
+                return resp
+            else:
+                try:
+                    token = fetchapikeys.usersessionid()
+                    lastLog = datetime.now()
+                    experationDate = datetime.now() + timedelta(days=3)
+                    
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "INSERT INTO [Session] (Token, Username, ExperationDate, LastLog, Device, DeviceID, IP)"
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        (token, usr.username, experationDate, lastLog, 'Test', 'Test','Test')
+                    )
+                   
+                    conn.commit()
+                    cursor.close()
+
+                    
+                    resp = BaseResp(Result=True, ResultMessage="User logged in successfully",Detail=[{"token": token}])
+                    return resp
+                except Exception as e:
+                   
+                    resp = BaseResp(Result=False, ResultMessage=f"Error log in user: {e}")
+                    return resp
+        
+        return await asyncio.to_thread(run_query)
+    except Exception as e:
+        resp = BaseResp(Result=False, ResultMessage=f"Error log in user: {e}")
+        return resp
+   
+async def logout(token:str):
+    try:
+        def run_query():
+            query = "DELETE FROM [Session] WHERE Token = ?"
+            try:
+                        
+                cursor = conn.cursor()
+                cursor.execute(query,(token))
+                conn.commit()
+                cursor.close()
+
+                resp = BaseResp(Result=True, ResultMessage="User logged out successfully")
+                return resp
+            except Exception as e:
+                    
+                resp = BaseResp(Result=False, ResultMessage=f"Error log out user: {e}")
+                return resp
+            
+        return await asyncio.to_thread(run_query)
+    except Exception as e:
+        resp = BaseResp(Result=False, ResultMessage=f"Error log out user: {e}")
+        return resp
+             
 
 # Testing Phase
 
@@ -108,27 +182,23 @@ async def registerNewUser_Test(item:UserAuth):
         return await asyncio.to_thread(run_query)
     except Exception as e:
         return {"message": f"Error registering user: {e}"}
-    
-    
-
-
-
 
 # async def register_user(user:UserAuth):
 #      try:
 #         def run_query():
-#             dba = get_db()
-#             dba = next(dba) 
-#             new_user = UsrTest(Username=user.username, Token=user.token, Device=user.device)
-#             dba.add(new_user)
-#             dba.commit()
-#             dba.refresh(new_user)
-#             return new_user
-        
+#              with SessionLocal() as db:
+#                 new_user = UsrTest(Username=user.username, Token=user.token, Device=user.device)
+#                 db.add(new_user)
+#                 db.commit()
+#                 db.refresh(new_user)
+#                 resp = BaseResp(Result=True, ResultMessage="User registered successfully")
+#                 return resp
+            
 #         return await asyncio.to_thread(run_query)
     
 #      except Exception as e:
-#         return {"message": f"Error registering user: {e}"}
+#         resp = BaseResp(Result=False, ResultMessage=f"Error registering user: {e}")
+#         return resp
 
 #Finish Testing Phase
 

@@ -1,5 +1,5 @@
 # from sqlalchemy import Column, Integer, String
-# from config.databaseAzure import Base
+# from _Testing.databaseTest import Base
 
 # class UsrTest(Base):
 #     __tablename__ = "UserTest"
