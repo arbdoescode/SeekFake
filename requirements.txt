@@ -12,4 +12,5 @@ setuptools
 google
 google-generativeai
 pyodbc
+uvicorn
 # sqlalchemy
