@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 
-# Install system dependencies and Microsoft ODBC driver
 RUN apt-get update && \
     apt-get install -y gnupg curl apt-transport-https unixodbc-dev && \
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
