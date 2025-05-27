@@ -14,3 +14,4 @@ SeekFake is an intelligent fact-verification system designed to determine the au
 - Add more integrations
 - Secured and authorized api calls
 - Public keys for individual use
+- Activity hub for storing authentications
