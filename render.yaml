@@ -1,9 +1,20 @@
+# services:
+#   - type: web
+#     name: fastapi-example
+#     runtime: python
+#     plan: free
+#     autoDeploy: false
+#     buildCommand: ./render-build.sh
+#     buildCommand: pip install -r requirements.txt
+#     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
 services:
   - type: web
-    name: fastapi-example
-    runtime: python
+    name: fastapi-odbc-app
+    env: docker
     plan: free
-    autoDeploy: false
-    buildCommand: ./render-build.sh
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    region: oregon
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: your_connection_string_here
