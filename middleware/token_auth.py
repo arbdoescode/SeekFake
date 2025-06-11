@@ -2,6 +2,8 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from config.databaseAzure import conn
+# from context import request_context
+import uuid
 import asyncio
 
 # class CheckValueMiddleware(BaseHTTPMiddleware):
@@ -29,6 +31,9 @@ class CheckValueMiddleware(BaseHTTPMiddleware):
         self.skip_paths = skip_paths or []
 
     async def dispatch(self, request: Request, call_next):
+        
+        # request_context.request_id_var.set(str(uuid.uuid4()))
+        
         if request.url.path in self.skip_paths:
             return await call_next(request)
 
@@ -42,6 +47,9 @@ class CheckValueMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=401, content={"error": "Invalid token"})
 
         request.state.username = username
+        
+        # request_context.user_id_var.set(username) 
+
         return await call_next(request)
 
     def get_username_from_token(self, token: str):

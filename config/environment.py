@@ -22,3 +22,5 @@ azuredatabase=os.getenv("AZURE_SQL_DATABASE")
 azureusername=os.getenv("AZURE_USERNAME")
 azurepassword=os.getenv("AZURE_PASSWORD")
 
+azurelogging=os.getenv("AZURE_MONITOR_CONNECTION_STRING")
+
