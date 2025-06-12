@@ -9,8 +9,8 @@ from config.databaseAzure import conn
 from service import fetchapikeys
 # from _Testing.databaseTest import SessionLocal
 from datetime import datetime, timedelta
+from config.logger_config import LoggingHelper
 import asyncio
-
 
 
 # User Login/LogOut & Registration
@@ -140,17 +140,24 @@ async def logout(token:str):
              
 async def getUser(username: str):
     try:
+        
+        logger = LoggingHelper.get_logger("UserService")
+        logger.info(f"Fetching user: {username}")
+        
         def run_query():
               
             cursor = conn.cursor()
-            cursor.execute("SELECT [Username],[Fullname],[UserPlan] FROM [User] WHERE Username = ?", (username))
+            cursor.execute("SELECT [Username],[Fullname],[UserPlan] FROM [User] WHERE Username = ?", (username,))
             rows = cursor.fetchall()
             columns = [column[0] for column in cursor.description]
             cursor.close()
             
             return [dict(zip(columns, row)) for row in rows]
-        
-        return await asyncio.to_thread(run_query)
+            
+        result = await asyncio.to_thread(run_query)
+        # logger.info(f"Successfully fetched user rows returned: {len(result)}")
+
+        return result
     except Exception as e:
         resp = BaseResp(Result=False, ResultMessage=f"Error geting user: {e}")
         return resp
