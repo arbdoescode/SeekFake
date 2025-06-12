@@ -1,22 +1,38 @@
 from config import environment 
 import logging
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-# from context import request_context
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
 
+class LoggingHelper:
+    _exporter = None
+    _connection_string = environment.azurelogging
 
+    @classmethod
+    def _initialize_exporter(cls):
+        if cls._exporter is None:
+            cls._exporter = AzureMonitorLogExporter(connection_string=cls._connection_string)
 
-def get_logger(name: str = __name__):
-    logger = logging.getLogger(name)
-    if not logger.hasHandlers():
-        handler = AzureLogHandler(connection_string=environment.azurelogging)
+    @classmethod
+    def get_logger(cls, service_name: str, level=logging.INFO) -> logging.Logger:
+        cls._initialize_exporter()
 
-        
-        formatter = logging.Formatter(
-            '%(asctime)s | %(name)s | %(levelname)s | %(message)s'
+        resource = Resource.create({
+            "service.name": service_name
+        })
+
+        logger_provider = LoggerProvider(resource=resource)
+        logger_provider.add_log_record_processor(
+            BatchLogRecordProcessor(cls._exporter)
         )
 
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
+        otel_handler = LoggingHandler(level=level, logger_provider=logger_provider)
 
-    return logger
+        logger = logging.getLogger(service_name)
+        logger.setLevel(level)
+
+        if not logger.hasHandlers():
+            logger.addHandler(otel_handler)
+
+        return logger

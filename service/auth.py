@@ -9,11 +9,9 @@ from config.databaseAzure import conn
 from service import fetchapikeys
 # from _Testing.databaseTest import SessionLocal
 from datetime import datetime, timedelta
-from config.logger_config import get_logger
+from config.logger_config import LoggingHelper
 import asyncio
 
-
-logger = get_logger(__name__)
 
 # User Login/LogOut & Registration
 
@@ -143,6 +141,7 @@ async def logout(token:str):
 async def getUser(username: str):
     try:
         
+        logger = LoggingHelper.get_logger("UserService")
         logger.info(f"Fetching user: {username}")
         
         def run_query():

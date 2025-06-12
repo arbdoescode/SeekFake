@@ -13,5 +13,7 @@ google
 google-generativeai
 pyodbc
 uvicorn
-# sqlalchemy
-opencensus-ext-azure
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation
+azure-monitor-opentelemetry-exporter
