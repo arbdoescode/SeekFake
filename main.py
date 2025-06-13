@@ -13,7 +13,6 @@ from module.Request.Account import LogInReq
 from module.Response.BaseRes import BaseResp
 from service import auth,aigenerating,ipsessions
 from starlette.requests import Request
-from config.logger_config import get_logger
 from typing import List
 
 app = FastAPI()
