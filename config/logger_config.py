@@ -1,5 +1,6 @@
 from config import environment 
 import logging
+import json
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
@@ -8,6 +9,10 @@ from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
 class LoggingHelper:
     _exporter = None
     _connection_string = environment.azurelogging
+    
+    @staticmethod
+    def log_structured(logger, data: dict):
+        logger.info(f"{json.dumps(data)}")
 
     @classmethod
     def _initialize_exporter(cls):

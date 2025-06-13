@@ -155,8 +155,10 @@ async def getUser(username: str):
             return [dict(zip(columns, row)) for row in rows]
             
         result = await asyncio.to_thread(run_query)
-        # logger.info(f"Successfully fetched user rows returned: {len(result)}")
-
+        
+        logger = LoggingHelper.get_logger("UserService")
+        LoggingHelper.log_structured(logger, result)
+        
         return result
     except Exception as e:
         resp = BaseResp(Result=False, ResultMessage=f"Error geting user: {e}")
