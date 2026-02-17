@@ -1,0 +1,42 @@
+name: Security Scanning Workflow
+
+on:  
+  push:  
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sundays
+
+jobs:
+  dependency_scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Dependency Scanner
+        uses: Snyk/actions/python@snyk-v1
+        with:
+          args: --all-dependencies
+
+  code_scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Static Code Analysis
+        uses: github/codeql-action/analyze@v1
+        with:
+          upload: true
+
+  security_vulnerability_checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Security Checks
+        uses: github/super-linter@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
